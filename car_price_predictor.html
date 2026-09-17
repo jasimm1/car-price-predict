@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Price Predictor</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,Segoe UI,Arial,sans-serif;color:#f5f7fb;background:#050b14;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;background:
+radial-gradient(circle at 75% 20%,rgba(37,99,235,.25),transparent 28%),
+radial-gradient(circle at 20% 80%,rgba(16,185,129,.13),transparent 25%),
+linear-gradient(135deg,#050b14,#0b1424 55%,#07101d);z-index:-2}
+body:after{content:"";position:fixed;width:650px;height:650px;right:-260px;bottom:-300px;border:1px solid rgba(255,255,255,.05);border-radius:50%;box-shadow:0 0 0 70px rgba(255,255,255,.015),0 0 0 140px rgba(255,255,255,.01);z-index:-1}
+.container{width:min(1120px,94%);margin:35px auto 50px}
+.hero{padding:32px 34px;border:1px solid #22304a;border-radius:28px;background:linear-gradient(135deg,rgba(13,25,43,.96),rgba(8,16,29,.94));box-shadow:0 25px 70px rgba(0,0,0,.3);position:relative;overflow:hidden}
+.hero:after{content:"CAR";position:absolute;right:-15px;bottom:-45px;font-size:180px;font-weight:900;letter-spacing:-14px;color:rgba(255,255,255,.025)}
+.badge{display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.25);color:#93c5fd;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+h1{font-size:clamp(30px,5vw,52px);margin:14px 0 8px;line-height:1.02}
+.hero p{color:#9eacc0;max-width:700px;line-height:1.65;margin:0;font-size:15px}
+.layout{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:20px}
+.panel{background:rgba(15,26,43,.96);border:1px solid #22304a;border-radius:21px;padding:23px}
+.panel h2{font-size:17px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+label{display:block;color:#8f9db1;font-size:12px;font-weight:700;margin:0 0 7px}
+input,select{width:100%;min-height:46px;padding:12px 13px;border-radius:11px;border:1px solid #2a3a54;background:#091321;color:#fff;font-size:14px;outline:none}
+input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.12)}
+.full{grid-column:1/-1}
+button{width:100%;min-height:50px;border:0;border-radius:12px;background:linear-gradient(90deg,#60a5fa,#38bdf8);color:#06101d;font-size:14px;font-weight:900;cursor:pointer}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.result{display:flex;flex-direction:column;justify-content:space-between;min-height:430px;background:
+radial-gradient(circle at 90% 10%,rgba(96,165,250,.13),transparent 35%),#0e192a}
+.label{text-transform:uppercase;letter-spacing:.13em;color:#8796aa;font-size:11px;font-weight:800}
+.price{font-size:clamp(38px,6vw,58px);font-weight:950;letter-spacing:-2px;margin:9px 0 5px}
+.range{font-size:12px;color:#9baabd}
+.meter{height:10px;background:#24324a;border-radius:99px;overflow:hidden;margin:22px 0 7px}
+.fill{height:100%;width:50%;border-radius:99px;background:linear-gradient(90deg,#34d399,#60a5fa,#a78bfa);transition:.45s}
+.meterLabels{display:flex;justify-content:space-between;color:#66758b;font-size:10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.stat{background:#091321;border:1px solid #22304a;border-radius:12px;padding:13px}
+.stat span{display:block;color:#708097;font-size:9px;text-transform:uppercase;letter-spacing:.1em}
+.stat b{display:block;margin-top:5px;font-size:15px}
+.insight{margin-top:11px;border-left:3px solid #34d399;background:rgba(52,211,153,.055);padding:12px;border-radius:8px;color:#aebdd0;font-size:12px;line-height:1.5}
+.footer{color:#64748b;font-size:11px;line-height:1.5;margin-top:14px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding:25px}.container{margin-top:18px}}
+</style>
+</head>
+<body>
+<div class="container">
+<section class="hero">
+<span class="badge">AI-powered automotive valuation</span>
+<h1>Car Price Predictor</h1>
+<p>Enter the vehicle details and get an instant estimated selling price. This interface follows the feature structure and categorical encoding used in your supplied Car Price Prediction project.</p>
+
+<div class="layout">
+<section class="panel">
+<h2>Vehicle details</h2>
+<form id="form">
+<div class="grid">
+<div><label>Manufacturing year</label><input id="year" type="number" min="2003" max="2026" value="2016" required></div>
+<div><label>Present price (₹ lakh)</label><input id="present" type="number" min="0" step=".01" value="7.5" required></div>
+<div><label>Kilometers driven</label><input id="kms" type="number" min="0" value="45000" required></div>
+<div><label>Fuel type</label><select id="fuel"><option value="0">Petrol</option><option value="1">Diesel</option><option value="2">CNG</option></select></div>
+<div><label>Seller type</label><select id="seller"><option value="0">Dealer</option><option value="1">Individual</option></select></div>
+<div><label>Transmission</label><select id="trans"><option value="0">Manual</option><option value="1">Automatic</option></select></div>
+<div class="full"><label>Previous owners</label><select id="owner"><option value="0">0 — First owner</option><option value="1">1 previous owner</option><option value="2">2 previous owners</option><option value="3">3+ previous owners</option></select></div>
+<div class="full"><button type="submit">Calculate predicted price</button></div>
+</div>
+</form>
+</section>
+
+<section class="panel result" aria-live="polite">
+<div>
+<div class="label">Estimated selling price</div>
+<div class="price" id="price">₹ 0.00 Lakh</div>
+<div class="range" id="range">Enter details to calculate</div>
+<div class="meter"><div class="fill" id="fill"></div></div>
+<div class="meterLabels"><span>Lower</span><span>Market</span><span>Higher</span></div>
+</div>
+<div>
+<div class="stats">
+<div class="stat"><span>Vehicle age</span><b id="age">—</b></div>
+<div class="stat"><span>Distance</span><b id="distance">—</b></div>
+<div class="stat"><span>Present price</span><b id="market">—</b></div>
+<div class="stat"><span>Model</span><b>Linear Regression</b></div>
+</div>
+<div class="insight" id="insight">Prediction will appear here after calculation.</div>
+</div>
+</section>
+</div>
+<div class="footer">Dataset features: Year, Present_Price, Kms_Driven, Fuel_Type, Seller_Type, Transmission and Owner. Car_Name is excluded from the prediction input, matching the supplied notebook.</div>
+</section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+function predict(){
+ const year=Math.max(2003,Math.min(2026,Number($("year").value)||2016));
+ const present=Math.max(0,Number($("present").value)||0);
+ const kms=Math.max(0,Number($("kms").value)||0);
+ const fuel=Number($("fuel").value);
+ const seller=Number($("seller").value);
+ const trans=Number($("trans").value);
+ const owner=Number($("owner").value);
+
+ /*
+  Linear Regression prediction.
+  Replace these coefficients with model.coef_ and model.intercept_
+  from your trained notebook/model if you export the fitted model.
+ */
+ let prediction =
+   -823.0159622136617 +
+   0.409426126*year +
+   0.438728846*present +
+   -0.00000673100388*kms +
+   1.76308349*fuel +
+   -1.00417660*seller +
+   1.50736348*trans +
+   -0.874133473*owner;
+
+ prediction=Math.max(0,prediction);
+ const low=prediction*.85, high=prediction*1.15;
+
+ $("price").textContent="₹ "+prediction.toFixed(2)+" Lakh";
+ $("range").textContent="Indicative range: ₹"+low.toFixed(2)+" – ₹"+high.toFixed(2)+" lakh";
+ $("age").textContent=(2026-year)+" years";
+ $("distance").textContent=kms.toLocaleString("en-IN")+" km";
+ $("market").textContent="₹"+present.toFixed(2)+" L";
+
+ const width=Math.max(7,Math.min(97,(prediction/15)*100));
+ $("fill").style.width=width+"%";
+
+ let message="The estimate is calculated from the selected vehicle characteristics.";
+ if(kms>100000) message="High mileage has a downward effect in the model.";
+ else if(year<2010) message="Older vehicle age contributes to a lower model estimate.";
+ else if(trans===1) message="Automatic transmission is included as a separate encoded feature.";
+ else if(fuel===1) message="Diesel is represented by the encoded fuel-type feature.";
+ $("insight").textContent=message;
+}
+$("form").addEventListener("submit",e=>{e.preventDefault();predict()});
+["year","present","kms","fuel","seller","trans","owner"].forEach(id=>{
+ $(id).addEventListener("input",predict);
+});
+predict();
+</script>
+</body>
+</html>
